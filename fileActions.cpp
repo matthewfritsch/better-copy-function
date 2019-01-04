@@ -12,11 +12,9 @@
 #include "fileActions.hpp"
 
 fileActions::fileActions() {
-
-}
-
-fileActions::~fileActions() {
-
+    verbose = false;
+    recursive = false;
+    showCompletionBar = true;
 }
 
 void fileActions::showHelp() {
@@ -35,6 +33,10 @@ bool fileActions::is_dir(const char *path) {
     struct stat buf;
     stat(path, &buf);
     return S_ISDIR(buf.st_mode);
+}
+
+bool fileActions::is_exist(const char *path) {
+    return is_dir(path) || is_file(path);
 }
 
 bool fileActions::writeFile() {
@@ -71,8 +73,43 @@ char *fileActions::findHomedir(char *path) {
 void fileActions::read_directory(const std::string name, std::vector<std::string> &v) {
     DIR *dirp = opendir(name.c_str());
     struct dirent *dp;
-    while ((dp = readdir(dirp)) != NULL) {
+    while ((dp = readdir(dirp)) != nullptr) {
         v.push_back(dp->d_name);
     }
     closedir(dirp);
+}
+
+bool fileActions::betterCheckAndCopy(int argc, char *args[]) {
+
+}
+
+bool fileActions::checkAndCopy(int argc, char *args[]) {
+    if (check(argc, args)) {
+
+    } else {
+        showHelp();
+        return false;
+    }
+}
+
+bool fileActions::check(int argc, char *args[]) {
+    for (int x = argc - 1; x >= 0; x++) {
+        if (x == argc - 1)
+            FINISH = args[x];
+        else if (x == argc - 2)
+            START = args[x];
+        else {
+            if (args[x] == "-v") {
+                verbose = true;
+            } else if (args[x] == "-c") {
+                showCompletionBar = false;
+            } else if (args[x] == "-r") {
+                recursive = true;
+            } else {
+                std::cerr << "Problems!" << std::endl;
+                return false;
+            }
+        }
+    }
+    return is_exist(FINISH) && is_exist(START);
 }

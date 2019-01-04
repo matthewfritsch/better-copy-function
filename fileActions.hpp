@@ -8,30 +8,30 @@
 
 class fileActions {
 private:
-    struct File {
-        std::string path;
-        long long int sizeInBytes;
-        bool isDirectory;
 
+    struct File {
+        std::string *path;
+        long long int *sizeInBytes;
+        bool *isDirectory;
         File(std::string newPath, long long int newSize, bool isDir) {
-            path = newPath;
-            sizeInBytes = newSize;
-            isDirectory = isDir;
+            *path = newPath;
+            *sizeInBytes = newSize;
+            *isDirectory = isDir;
+        }
+
+        void cleanVar() {
+            delete (path);
+            delete (sizeInBytes);
+            delete (isDirectory);
         }
     };
 
-    bool verbose = false;
-    bool recursive = false;
-    bool showCompletionBar = true;
+    char *START;
+    char *FINISH;
 
-public:
-    fileActions();
-
-    ~fileActions();
-
-    void showHelp();
-
-    bool checkAndCopy(char *args[]);
+    bool verbose;
+    bool recursive;
+    bool showCompletionBar;
 
     bool is_file(const char *path);
 
@@ -45,7 +45,16 @@ public:
 
     bool readFile();
 
+    bool is_exist(const char *);
 
+    bool check(int argc, char *args[]);
+public:
+    fileActions();
+    void showHelp();
+
+    bool checkAndCopy(int argc, char *args[]);
+
+    bool betterCheckAndCopy(int argc, char *args[]);
 };
 
 
