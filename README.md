@@ -9,10 +9,10 @@ As of writing this (1/3/2019), I have two years of college-level C++ experience,
 
 ### Goals:
 
- [x] Change any argument beginning with \'\~\' to the user's home directory (e.g \"~/Desktop/Anthem.flac\" becomes \"/home/matthew/Desktop/Anthem.flac\")
+- [x] Change any argument beginning with \'\~\' to the user's home directory (e.g \"~/Desktop/Anthem.flac\" becomes \"/home/matthew/Desktop/Anthem.flac\")
 
- [] Have a "command helper" print out to show the user the correct format, all options, and other necessary info when the command is run with the --help option, or if there are less than 3 arguments (one for the program execution, one for the file to be copied, and one more for the location in which it is copied to)
+- [] Have a "command helper" print out to show the user the correct format, all options, and other necessary info when the command is run with the --help option, or if there are less than 3 arguments (one for the program execution, one for the file to be copied, and one more for the location in which it is copied to)
 
- [x] Detect if a path points to a file, a directory, or something that cannot be copied.
+- [x] Detect if a path points to a file, a directory, or something that cannot be copied.
 
 TODO Add more here
