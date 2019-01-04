@@ -14,4 +14,5 @@ All help is appreciated, please throw me a pull request :)
 [] Have a "command helper" print out to show the user the correct format, all options, and other necessary info when the command is run with the --help option, or if there are less than 3 arguments (one for the program execution, one for the file to be copied, and one more for the location in which it is copied to)
 
 [x] Detect if a path points to a file, a directory, or something that cannot be copied.
+
 TODO Add more here
