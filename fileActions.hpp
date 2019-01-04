@@ -5,6 +5,8 @@
 #ifndef POINTERTEST_FILEACTIONS_HPP
 #define POINTERTEST_FILEACTIONS_HPP
 
+#include <vector>
+#include <string>
 
 class fileActions {
 private:
@@ -28,6 +30,7 @@ private:
 
     char *START;
     char *FINISH;
+    std::vector<std::string> toWrite;
 
     bool verbose;
     bool recursive;
@@ -53,8 +56,6 @@ public:
     void showHelp();
 
     bool checkAndCopy(int argc, char *args[]);
-
-    bool betterCheckAndCopy(int argc, char *args[]);
 };
 
 
