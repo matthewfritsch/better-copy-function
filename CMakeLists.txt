@@ -3,4 +3,4 @@ project(pointerTest)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(pointerTest main.cpp)
+add_executable(pointerTest main.cpp fileActions.cpp fileActions.hpp)
