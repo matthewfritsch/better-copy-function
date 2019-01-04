@@ -3,7 +3,7 @@ I've had some difficulty with the way that the "cp" command works on the termina
 
 As of writing this (1/3/2019), I have two years of college-level C++ experience, and zero experience writing terminal programs for UNIX systems, using POSIX libraries, or directly really writing a C++ project on/for any OS but Windows 10 (wrote a couple Java programs on MacOS).
 
-All help is appreciated, please throw me a pull request :)
+**All help is appreciated, please throw me a pull request :)**
 
 
 
