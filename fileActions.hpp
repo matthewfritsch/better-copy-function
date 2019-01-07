@@ -11,25 +11,25 @@
 class fileActions {
 private:
 
-    struct File {
-        std::string *path;
-        long long int *sizeInBytes;
-        bool *isDirectory;
-        File(std::string newPath, long long int newSize, bool isDir) {
-            *path = newPath;
-            *sizeInBytes = newSize;
-            *isDirectory = isDir;
-        }
+//    struct File {
+//        std::string *path;
+//        long long int *sizeInBytes;
+//        bool *isDirectory;
+//        File(std::string newPath, long long int newSize, bool isDir) {
+//            *path = newPath;
+//            *sizeInBytes = newSize;
+//            *isDirectory = isDir;
+//        }
+//
+//        void cleanVar() {
+//            delete (path);
+//            delete (sizeInBytes);
+//            delete (isDirectory);
+//        }
+//    };
 
-        void cleanVar() {
-            delete (path);
-            delete (sizeInBytes);
-            delete (isDirectory);
-        }
-    };
-
-    char *START;
-    char *FINISH;
+    std::string START;
+    std::string FINISH;
     std::vector<std::string> toWrite;
 
     bool verbose;

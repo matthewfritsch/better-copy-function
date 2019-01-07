@@ -11,6 +11,8 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <cstring>
+
 
 fileActions::fileActions() {
     verbose = false;
@@ -37,16 +39,16 @@ bool fileActions::is_dir(const char *path) {
 }
 
 bool fileActions::is_exist(const char *path) {
-    if (is_dir(path)) {
-        std::cout << "This directory exists!" << std::endl;
-        return true;
-    } else if (is_file(path)) {
-        std::cout << "This file exists!" << std::endl;
-        return true;
-    } else
-        std::cout << "Problem with " << path << std::endl;
-    return false;
-    //return is_dir(path) || is_file(path);
+//    if (is_dir(path)) {
+//        std::cout << "This directory exists!" << std::endl;
+//        return true;
+//    } else if (is_file(path)) {
+//        std::cout << "This file exists!" << std::endl;
+//        return true;
+//    } else
+//        std::cout << "Problem with " << path << std::endl;
+//    return false;
+    return is_dir(path) || is_file(path);
 }
 
 bool fileActions::writeFile() {
@@ -81,27 +83,46 @@ char *fileActions::findHomedir(char *path) {
 
 void fileActions::read_directory(const std::string name, std::vector<std::string> &v) {
     DIR *dirp = opendir(name.c_str());
+    std::vector<std::string> newVec;
     struct dirent *dp;
     while ((dp = readdir(dirp)) != nullptr) {
-        v.push_back(dp->d_name);
+        newVec.push_back(dp->d_name);
     }
     closedir(dirp);
+    for (int x = newVec.size() - 1; x >= 0; x--) {
+        if (newVec[x] == ".." || newVec[x] == ".") {
+            newVec.erase(newVec.begin() + x);
+        } else {
 
-    for (int x = 0; x < v.size(); x++) {
-        if (v[x].substr(v[x].length() - 3) == "/.." || v[x].substr(v[x].length() - 2) == "/.") {
-            v.erase(v.begin() + x);
+            newVec[x] = START + "/" + newVec[x];
+            //std::cout << newVec[x] << std::endl;
         }
     }
+    for (std::string s:newVec) {
+        v.push_back(s);
+    }
+    newVec.clear();
 }
 
 bool fileActions::checkAndCopy(int argc, char *args[]) {
     if (check(argc, args)) { //provided we have a starting place, ending place, and all variables are taken care of...
-        if (is_dir(START)) {
-            mkdir(FINISH, 0777);
+        if (is_dir(START.c_str())) {
+            mkdir(FINISH.c_str(), 0777);
             if (recursive) {
                 read_directory(START, toWrite);
-                for (std::string next : toWrite) {
-                    std::cout << next << std::endl;
+                for (int x = 0; x < toWrite.size(); x++) {
+                    if (is_dir((toWrite[x]).c_str())) {
+                        //std::cout << START + "/" + toWrite[x] << " is a dir" << std::endl;
+                        read_directory(toWrite[x], toWrite);
+                    } //else if (is_file((START + "/" + toWrite[x]).c_str()))
+                    //std::cout << START + "/" + toWrite[x] << " is a file" << std::endl;
+                }
+                for (std::string str : toWrite) {
+                    if (is_dir(str.c_str())) {
+                        std::cout << str << " is a directory" << std::endl;
+                    } else if (is_file(str.c_str())) {
+                        std::cout << str << " is a file" << std::endl;
+                    }
                 }
             }
         }
@@ -114,18 +135,19 @@ bool fileActions::checkAndCopy(int argc, char *args[]) {
 
 bool fileActions::check(int argc, char *args[]) { //sort out the required booleans
     for (int x = argc - 1; x > 0; x--) {
-        if (x == argc - 1)
+        if (x == argc - 1)//{
             FINISH = findHomedir(args[x]);
-            //std::cout << "Finish is now " << findHomedir(args[x]) << std::endl;
-        else if (x == argc - 2)
+            //std::cout << "Finish is now " << findHomedir(args[x]) << std::endl;}
+        else if (x == argc - 2)//{
             START = findHomedir(args[x]);
-            //std::cout << "Start is now " << findHomedir(args[x]) << std::endl;
+            //std::cout << "Start is now " << findHomedir(args[x]) << std::endl;}
         else {
-            if (args[x] == "-v") {
+            //std::cout << args[x] << std::endl;
+            if (strcmp(args[x], "-v") == 0) {
                 verbose = true;
-            } else if (args[x] == "-c") {
+            } else if (strcmp(args[x], "-c") == 0) {
                 showCompletionBar = false;
-            } else if (args[x] == "-r") {
+            } else if (strcmp(args[x], "-r") == 0) {
                 recursive = true;
             } else {
                 std::cerr << "Problems!" << std::endl;
@@ -134,5 +156,5 @@ bool fileActions::check(int argc, char *args[]) { //sort out the required boolea
         }
     }
 
-    return is_exist(START);
+    return is_exist(START.c_str());
 }
