@@ -51,6 +51,8 @@ private:
     bool is_exist(const char *);
 
     bool check(int argc, char *args[]);
+
+    bool write(std::string input, std::string output);
 public:
     fileActions();
     void showHelp();

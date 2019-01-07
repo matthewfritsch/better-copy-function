@@ -23,7 +23,10 @@ fileActions::fileActions() {
 void fileActions::showHelp() {
     std::cout << "\"ecp [OPTIONS] <SOURCE> <DEST>\"" << std::endl;
     std::cout << "  OPTIONS:" << std::endl;
+    std::cout << "  -c ==== Shows completion bar (enabled by default, will stop working when verbose is enabled)"
+              << std::endl;
     std::cout << "  -r ==== Recursively copies all files below the current directory" << std::endl;
+    std::cout << "  -v ==== Displays all files being copied" << std::endl;
 }
 
 bool fileActions::is_file(const char *path) {
@@ -81,8 +84,8 @@ char *fileActions::findHomedir(char *path) {
     return path;
 }
 
-void fileActions::read_directory(const std::string name, std::vector<std::string> &v) {
-    DIR *dirp = opendir(name.c_str());
+void fileActions::read_directory(const std::string directory, std::vector<std::string> &v) {
+    DIR *dirp = opendir(directory.c_str());
     std::vector<std::string> newVec;
     struct dirent *dp;
     while ((dp = readdir(dirp)) != nullptr) {
@@ -90,17 +93,18 @@ void fileActions::read_directory(const std::string name, std::vector<std::string
     }
     closedir(dirp);
     for (int x = newVec.size() - 1; x >= 0; x--) {
-        if (newVec[x] == ".." || newVec[x] == ".") {
+        if (newVec[x] == ".." || newVec[x] == ".")
             newVec.erase(newVec.begin() + x);
-        } else {
-
-            newVec[x] = START + "/" + newVec[x];
+        else if (directory == START) {
+            v.push_back(/*directory + "/" + */newVec[x]);
             //std::cout << newVec[x] << std::endl;
+        } else {
+            v.push_back(directory.substr(START.length() + 1) + "/" + newVec[x]);
+            std::cout << directory.substr(START.length() + 1) + "/" + newVec[x] << std::endl;
         }
+
     }
-    for (std::string s:newVec) {
-        v.push_back(s);
-    }
+
     newVec.clear();
 }
 
@@ -111,28 +115,70 @@ bool fileActions::checkAndCopy(int argc, char *args[]) {
             if (recursive) {
                 read_directory(START, toWrite);
                 for (int x = 0; x < toWrite.size(); x++) {
-                    if (is_dir((toWrite[x]).c_str())) {
+                    if (is_dir((START + "/" + toWrite[x]).c_str())) {
                         //std::cout << START + "/" + toWrite[x] << " is a dir" << std::endl;
-                        read_directory(toWrite[x], toWrite);
+                        read_directory(START + "/" + toWrite[x], toWrite);
+                        mkdir((FINISH + "/" + toWrite[x]).c_str(), 0777);
+                        toWrite.erase(toWrite.begin() + x);
+                        x--;
                     } //else if (is_file((START + "/" + toWrite[x]).c_str()))
                     //std::cout << START + "/" + toWrite[x] << " is a file" << std::endl;
                 }
                 for (std::string str : toWrite) {
-                    if (is_dir(str.c_str())) {
-                        std::cout << str << " is a directory" << std::endl;
-                    } else if (is_file(str.c_str())) {
-                        std::cout << str << " is a file" << std::endl;
-                    }
+                    write(START + "/" + str, FINISH + "/" + str);
+// //                   std::cout << "----" + str << std::endl;
+//                    if (is_dir((START+"/"+str).c_str())) {
+//                        std::cout << str << " is a directory" << std::endl;
+//                    } else if (is_file((START+"/"+str).c_str())) {
+//                        std::cout << START + "/" + str << " is a file" << std::endl;
+//                    }
                 }
             }
         }
     } else {
         showHelp();
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
+bool fileActions::write(std::string in, std::string out) {
+    std::ifstream input;
+    std::ofstream output;
+
+
+    std::cout << "Writing " + in + " to " + out << std::endl;
+
+    input.open(in);
+    if (!input.good()) {
+        return false;
+    }
+
+    output.open(out);
+    if (!output.good()) {
+        return false;
+    }
+
+    int currentpos = 0;
+    do {
+        input.seekg(0, input.end);
+        int length = input.tellg();
+        input.seekg(currentpos);
+        if (length - currentpos > 250000) {
+            currentpos += 250000;
+            length = 250000;
+        } else
+            currentpos = 0;
+        char *data = new char[length];
+        input.read(data, length);
+        output.write(data, length);
+    } while (currentpos > 0);
+
+    //output.put('\0');
+    output.close();
+    input.close();
+    return true;
+}
 bool fileActions::check(int argc, char *args[]) { //sort out the required booleans
     for (int x = argc - 1; x > 0; x--) {
         if (x == argc - 1)//{
@@ -155,6 +201,5 @@ bool fileActions::check(int argc, char *args[]) { //sort out the required boolea
             }
         }
     }
-
     return is_exist(START.c_str());
 }
